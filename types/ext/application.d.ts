@@ -162,6 +162,7 @@ export type Events = {
     };
     closePopups: Record<string, never>;
     storageChanged: Record<string, never>;
+    cardAdded: Record<string, never>;
 };
 
 export type EventArgument<TName extends EventNames<Events>> = BaseEventArgument<Events, TName>;

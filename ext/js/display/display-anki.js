@@ -584,6 +584,7 @@ export class DisplayAnki {
             allErrors.length = 0;
             allErrors.push(toError(e));
         }
+        this._display.application.trigger('cardAdded', {});
 
         if (addNoteOkay) {
             if (noteId === null) {

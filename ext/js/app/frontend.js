@@ -176,6 +176,11 @@ export class Frontend {
             visualViewport.addEventListener('resize', this._onVisualViewportResize.bind(this));
         }
 
+        this._application.on('cardAdded', () => window.parent.postMessage('cardAdded', '*'));
+        window.addEventListener('message', ({data}) => data === 'cardAdded' && window.postMessage({type: 'YOMITAN', event: 'card_added'}, '*'));
+
+        this._textScanner.on('clear', () => window.postMessage({type: 'YOMITAN', event: 'clear'}, '*'));
+
         this._application.on('optionsUpdated', this.updateOptions.bind(this));
         this._application.on('zoomChanged', this._onZoomChanged.bind(this));
         this._application.on('closePopups', this._onClosePopups.bind(this));
@@ -757,6 +762,8 @@ export class Frontend {
             details.params.full = textSource.fullContent;
             details.params['full-visible'] = 'true';
         }
+
+        window.postMessage({type: 'YOMITAN', event: 'content'}, '*');
         void this._showPopupContent(textSource, optionsContext, details);
     }
 
