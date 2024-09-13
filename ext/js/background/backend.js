@@ -45,6 +45,12 @@ import {createSchema, normalizeContext} from './profile-conditions-util.js';
 import {RequestBuilder} from './request-builder.js';
 import {injectStylesheet} from './script-manager.js';
 
+const activeHosts = new Set([
+    'mokuro-reader.vercel.app',
+    'translate.google.com',
+    'chatgpt.com',
+]);
+
 /**
  * This class controls the core logic of the extension, including API calls
  * and various forms of communication between browser tabs and external applications.
@@ -204,11 +210,37 @@ export class Backend {
      * @returns {Promise<void>} A promise which is resolved when initialization completes.
      */
     prepare() {
-        chrome.tabs.onActivated.addListener(() => {
-            this._sendMessageAllTabsIgnoreResponse({action: 'changeTab'});
+        chrome.tabs.onActivated.addListener((activeInfo) => {
+            chrome.tabs.get(activeInfo.tabId, (tab) => {
+                const url = tab.url ? new URL(tab.url) : null;
+                if (url?.hostname && activeHosts.has(url.hostname)) {
+                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: true}});
+                } else {
+                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: false}});
+                }
+            });
         });
-        chrome.tabs.onUpdated.addListener(() => {
-            this._sendMessageAllTabsIgnoreResponse({action: 'changeTab'});
+        chrome.tabs.onUpdated.addListener((_, _2, tab) => {
+            const url = tab.url ? new URL(tab.url) : null;
+            if (url?.hostname && activeHosts.has(url.hostname)) {
+                this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: true}});
+            } else {
+                this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: false}});
+            }
+        });
+        chrome.windows.onFocusChanged.addListener((windowId) => {
+            if (windowId === chrome.windows.WINDOW_ID_NONE) {
+                return this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: false}});
+            }
+            chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+                const tab = tabs[0];
+                const url = tab.url ? new URL(tab.url) : null;
+                if (url?.hostname && activeHosts.has(url.hostname)) {
+                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: true}});
+                } else {
+                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: false}});
+                }
+            });
         });
 
         if (this._preparePromise === null) {

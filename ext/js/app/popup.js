@@ -661,10 +661,8 @@ export class Popup extends EventDispatcher {
     _onVisibleChange({value}) {
         if (this._visibleValue === value) { return; }
 
-        const type = value ? 'visible' : 'hidden';
-        window.postMessage({source: 'YOMITAN', type}, '*');
-
         this._visibleValue = value;
+        const type = value ? 'visible' : 'hidden';
         this._frame.style.setProperty('visibility', type, 'important');
         void this._invokeSafe('displayVisibilityChanged', {value});
     }

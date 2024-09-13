@@ -118,7 +118,9 @@ export type ApiSurface = {
         return: void;
     };
     changeTab: {
-        params: void;
+        params: {
+            active: boolean;
+        };
         return: void;
     };
 };
