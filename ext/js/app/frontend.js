@@ -183,6 +183,7 @@ export class Frontend {
         this._application.on('zoomChanged', this._onZoomChanged.bind(this));
         this._application.on('closePopups', this._onClosePopups.bind(this));
         chrome.runtime.onMessage.addListener(this._onRuntimeMessage.bind(this));
+        chrome.runtime.onMessage.addListener((message) => message.action === 'changeTab' && window.postMessage({source: 'YOMITAN', type: 'tab_changed'}, '*'));
 
         this._textScanner.on('clear', this._onTextScannerClear.bind(this));
         this._textScanner.on('searchSuccess', this._onSearchSuccess.bind(this));

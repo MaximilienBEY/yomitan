@@ -59,6 +59,7 @@
             ]
         },
         "permissions": [
+            "tabs",
             "storage",
             "clipboardWrite",
             "unlimitedStorage",

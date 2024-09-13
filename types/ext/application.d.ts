@@ -117,6 +117,10 @@ export type ApiSurface = {
         params: FrameEndpointConnectedDetails;
         return: void;
     };
+    changeTab: {
+        params: void;
+        return: void;
+    };
 };
 
 export type ApiParams<TName extends ApiNames> = BaseApiParams<ApiSurface[TName]>;

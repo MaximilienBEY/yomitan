@@ -204,6 +204,13 @@ export class Backend {
      * @returns {Promise<void>} A promise which is resolved when initialization completes.
      */
     prepare() {
+        chrome.tabs.onActivated.addListener(() => {
+            this._sendMessageAllTabsIgnoreResponse({action: 'changeTab'});
+        });
+        chrome.tabs.onUpdated.addListener(() => {
+            this._sendMessageAllTabsIgnoreResponse({action: 'changeTab'});
+        });
+
         if (this._preparePromise === null) {
             const promise = this._prepareInternal();
             promise.then(
