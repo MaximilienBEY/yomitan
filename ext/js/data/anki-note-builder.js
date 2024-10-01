@@ -96,7 +96,7 @@ export class AnkiNoteBuilder {
         for (let i = 0, ii = fields.length; i < ii; ++i) {
             const fieldName = fields[i][0];
             const {value, errors: fieldErrors, requirements: fieldRequirements} = formattedFieldValues[i];
-            noteFields[fieldName] = value;
+            noteFields[fieldName] = value.replace('undefined -', '');
             allErrors.push(...fieldErrors);
             for (const requirement of fieldRequirements) {
                 const key = JSON.stringify(requirement);
