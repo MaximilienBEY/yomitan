@@ -206,53 +206,52 @@ export class Backend {
     }
 
     /**
+     *
+     * @returns {Promise<void>}
+     */
+    async emitActive() {
+        /** @type {boolean} */
+        const active = await new Promise((resolve) => {
+            chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+                if (tabs.length === 0) {
+                    resolve(false);
+                    return;
+                }
+                const tab = tabs[0];
+                if (!tab.url) {
+                    resolve(false);
+                    return;
+                }
+                const url = new URL(tab.url);
+                resolve(activeHosts.has(url.hostname));
+            });
+        });
+        /** @type {boolean} */
+        const chromeFocus = await new Promise((resolve) => {
+            chrome.windows.getLastFocused({populate: true}, (window) => {
+                resolve(window.state !== 'minimized' && window.focused);
+            });
+        });
+        this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: active && chromeFocus}});
+    }
+
+    /**
      * Initializes the instance.
      * @returns {Promise<void>} A promise which is resolved when initialization completes.
      */
     prepare() {
-        chrome.tabs.onActivated.addListener((activeInfo) => {
-            chrome.tabs.get(activeInfo.tabId, (tab) => {
-                const url = tab.url ? new URL(tab.url) : null;
-                if (url?.hostname && activeHosts.has(url.hostname)) {
-                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: true}});
-                } else {
-                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: false}});
-                }
-            });
+        chrome.tabs.onActivated.addListener(async () => {
+            await this.emitActive();
         });
-        chrome.tabs.onUpdated.addListener((_, _2, tab) => {
-            const url = tab.url ? new URL(tab.url) : null;
-            if (url?.hostname && activeHosts.has(url.hostname)) {
-                this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: true}});
-            } else {
-                this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: false}});
-            }
+        chrome.tabs.onUpdated.addListener(async () => {
+            await this.emitActive();
         });
-        chrome.windows.onFocusChanged.addListener((windowId) => {
-            if (windowId === chrome.windows.WINDOW_ID_NONE) {
-                return this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: false}});
-            }
-            chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-                const tab = tabs[0];
-                const url = tab.url ? new URL(tab.url) : null;
-                if (url?.hostname && activeHosts.has(url.hostname)) {
-                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: true}});
-                } else {
-                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: false}});
-                }
-            });
+        chrome.windows.onFocusChanged.addListener(async () => {
+            await this.emitActive();
         });
 
-        setInterval(() => {
-            chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-                const tab = tabs[0];
-                const url = tab.url ? new URL(tab.url) : null;
-                if (url?.hostname && activeHosts.has(url.hostname)) {
-                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: true}});
-                } else {
-                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: false}});
-                }
-            });
+        setInterval(async () => {
+            await this.emitActive();
         }, 1000);
 
         if (this._preparePromise === null) {
