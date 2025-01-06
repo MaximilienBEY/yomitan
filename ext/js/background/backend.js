@@ -243,6 +243,18 @@ export class Backend {
             });
         });
 
+        setInterval(() => {
+            chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+                const tab = tabs[0];
+                const url = tab.url ? new URL(tab.url) : null;
+                if (url?.hostname && activeHosts.has(url.hostname)) {
+                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: true}});
+                } else {
+                    this._sendMessageAllTabsIgnoreResponse({action: 'changeTab', params: {active: false}});
+                }
+            });
+        }, 1000);
+
         if (this._preparePromise === null) {
             const promise = this._prepareInternal();
             promise.then(
