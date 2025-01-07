@@ -188,7 +188,6 @@ export class Frontend {
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const active = message.params.active;
-            console.log('active', active);
             const type = active ? 'window_active' : 'window_inactive';
             window.postMessage({source: 'YOMITAN', type}, '*');
         });
