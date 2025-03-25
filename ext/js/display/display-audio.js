@@ -70,6 +70,8 @@ export class DisplayAudio {
         this._onAudioPlayButtonContextMenuBind = this._onAudioPlayButtonContextMenu.bind(this);
         /** @type {(event: import('popup-menu').MenuCloseEvent) => void} */
         this._onAudioPlayMenuCloseClickBind = this._onAudioPlayMenuCloseClick.bind(this);
+        /** @type {(event: MouseEvent) => void} */
+        this._onDictionnaryButtonClickBind = this._onDictionnaryButtonClick.bind(this);
     }
 
     /** @type {number} */
@@ -228,6 +230,11 @@ export class DisplayAudio {
             eventListeners.addEventListener(button, 'contextmenu', this._onAudioPlayButtonContextMenuBind, false);
             eventListeners.addEventListener(button, 'menuClose', this._onAudioPlayMenuCloseClickBind, false);
         }
+
+        const button = element.querySelector('.action-button[data-action=open-dictionnary]');
+        if (button) {
+            eventListeners.addEventListener(button, 'click', this._onDictionnaryButtonClickBind, false);
+        }
     }
 
     /** */
@@ -338,6 +345,22 @@ export class DisplayAudio {
         } else {
             void this.playAudio(dictionaryEntryIndex, headwordIndex);
         }
+    }
+
+    /**
+     * @param {MouseEvent} e
+     */
+    _onDictionnaryButtonClick(e) {
+        e.preventDefault();
+
+        const button = /** @type {HTMLButtonElement} */ (e.currentTarget);
+        const headwordIndex = this._getAudioPlayButtonHeadwordIndex(button);
+        const dictionaryEntryIndex = this._display.getElementDictionaryEntryIndex(button);
+
+        const headword = this._getHeadword(dictionaryEntryIndex, headwordIndex);
+        if (!headword) { return; }
+
+        void this._display.application.api.openDictionnary(headword.term);
     }
 
     /**

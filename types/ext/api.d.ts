@@ -223,6 +223,12 @@ type ApiSurface = {
         };
         return: AudioDownloader.Info[];
     };
+    openDictionnary: {
+        params: {
+            term: string;
+        };
+        return: boolean;
+    };
     commandExec: {
         params: {
             command: string;

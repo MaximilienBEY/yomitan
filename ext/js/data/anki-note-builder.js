@@ -497,7 +497,10 @@ export class AnkiNoteBuilder {
             // eslint-disable-next-line unicorn/prefer-dom-node-dataset
             const bOrder = Number.parseInt(b.getAttribute('data-order') || '0', 10);
             return aOrder - bOrder;
-        }).map((el) => el.innerHTML).join(' / ');
+        })
+            .map((el) => el.innerHTML)
+            .filter((el) => !el.includes('<'))
+            .join(' / ');
         const selection = document.getSelection();
         return (selection !== null ? selection.toString() : '') || selectedText;
     }

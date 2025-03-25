@@ -167,6 +167,7 @@ export class Backend {
             ['suspendAnkiCardsForNote',      this._onApiSuspendAnkiCardsForNote.bind(this)],
             ['commandExec',                  this._onApiCommandExec.bind(this)],
             ['getTermAudioInfoList',         this._onApiGetTermAudioInfoList.bind(this)],
+            ['openDictionnary',              this._onApiOpenDictionnary.bind(this)],
             ['sendMessageToFrame',           this._onApiSendMessageToFrame.bind(this)],
             ['broadcastTab',                 this._onApiBroadcastTab.bind(this)],
             ['frameInformationGet',          this._onApiFrameInformationGet.bind(this)],
@@ -729,6 +730,20 @@ export class Backend {
     /** @type {import('api').ApiHandler<'getTermAudioInfoList'>} */
     async _onApiGetTermAudioInfoList({source, term, reading, languageSummary}) {
         return await this._audioDownloader.getTermAudioInfoList(source, term, reading, languageSummary);
+    }
+
+    /** @type {import('api').ApiHandler<'openDictionnary'>} */
+    async _onApiOpenDictionnary({term}) {
+        chrome.tabs.query({}, (tabs) => {
+            const tab = tabs.find((t) => t.url && new URL(t.url).hostname === 'www.dictionnaire-japonais.com');
+            if (tab?.id) {
+                void chrome.tabs.update(tab.id, {url: `https://www.dictionnaire-japonais.com/search.php?w=${term}&t=1`, active: true});
+            } else {
+                void chrome.tabs.create({url: `https://www.dictionnaire-japonais.com/search.php?w=${term}&t=1`, active: true});
+            }
+        });
+        return true;
+        // return await this._audioDownloader.getTermAudioInfoList(source, term, reading, languageSummary);
     }
 
     /** @type {import('api').ApiHandler<'sendMessageToFrame'>} */

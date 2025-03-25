@@ -155,6 +155,14 @@ export class API {
     }
 
     /**
+     * @param {import('api').ApiParam<'openDictionnary', 'term'>} term
+     * @returns {Promise<import('api').ApiReturn<'openDictionnary'>>}
+     */
+    openDictionnary(term) {
+        return this._invoke('openDictionnary', {term});
+    }
+
+    /**
      * @param {import('api').ApiParam<'commandExec', 'command'>} command
      * @param {import('api').ApiParam<'commandExec', 'params'>} [params]
      * @returns {Promise<import('api').ApiReturn<'commandExec'>>}

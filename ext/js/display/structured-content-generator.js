@@ -339,7 +339,9 @@ export class StructuredContentGenerator {
             this._appendStructuredContent(node, content.content, dictionary, language);
         }
         if (tag === 'li') {
-            node.addEventListener('click', () => {
+            node.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 const wasSelected = node.classList.contains('gloss-sc-li-selected');
                 if (wasSelected) {
                     delete node.dataset.order;
