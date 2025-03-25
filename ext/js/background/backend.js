@@ -49,6 +49,7 @@ const activeHosts = new Set([
     'mokuro-reader.vercel.app',
     'translate.google.com',
     'chatgpt.com',
+    'www.dictionnaire-japonais.com',
 ]);
 
 /**
