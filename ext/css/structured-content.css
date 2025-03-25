@@ -247,6 +247,13 @@
 }
 :root[data-glossary-layout-mode=compact] .gloss-sc-ul[data-sc-content=glossary] .gloss-sc-li {
     display: inline;
+    cursor: pointer;
+}
+:root[data-glossary-layout-mode=compact] .gloss-sc-ul[data-sc-content=glossary] .gloss-sc-li:hover {
+    color: var(--text-color-light3);
+}
+:root[data-glossary-layout-mode=compact] .gloss-sc-ul[data-sc-content=glossary] .gloss-sc-li.gloss-sc-li-selected {
+    color: var(--accent-color);
 }
 :root[data-glossary-layout-mode=compact] .gloss-sc-ul[data-sc-content=glossary] .gloss-sc-li:not(:first-child)::before {
     white-space: pre-wrap;

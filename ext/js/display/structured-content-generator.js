@@ -338,6 +338,29 @@ export class StructuredContentGenerator {
         if (hasChildren) {
             this._appendStructuredContent(node, content.content, dictionary, language);
         }
+        if (tag === 'li') {
+            node.addEventListener('click', () => {
+                const wasSelected = node.classList.contains('gloss-sc-li-selected');
+                if (wasSelected) {
+                    delete node.dataset.order;
+                } else {
+                    node.dataset.order = '1000';
+                }
+
+                node.classList.toggle('gloss-sc-li-selected');
+
+                [...document.querySelectorAll('.gloss-sc-li.gloss-sc-li-selected')].map((el) => {
+                    // eslint-disable-next-line unicorn/prefer-dom-node-dataset
+                    const order = Number.parseInt(el.getAttribute('data-order') || '0', 10);
+                    return {el, order};
+                }).sort((a, b) => a.order - b.order).map(({el}, index) => {
+                    // eslint-disable-next-line unicorn/prefer-dom-node-dataset
+                    el.setAttribute('data-order', `${index + 1}`);
+                    return el;
+                });
+            });
+        }
+
         return node;
     }
 

@@ -491,8 +491,15 @@ export class AnkiNoteBuilder {
      * @returns {string}
      */
     _getPopupSelectionText() {
+        const selectedText = [...document.querySelectorAll('.gloss-sc-li.gloss-sc-li-selected')].sort((a, b) => {
+            // eslint-disable-next-line unicorn/prefer-dom-node-dataset
+            const aOrder = Number.parseInt(a.getAttribute('data-order') || '0', 10);
+            // eslint-disable-next-line unicorn/prefer-dom-node-dataset
+            const bOrder = Number.parseInt(b.getAttribute('data-order') || '0', 10);
+            return aOrder - bOrder;
+        }).map((el) => el.innerHTML).join(' / ');
         const selection = document.getSelection();
-        return selection !== null ? selection.toString() : '';
+        return (selection !== null ? selection.toString() : '') || selectedText;
     }
 
     /**
