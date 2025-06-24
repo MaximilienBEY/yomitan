@@ -47,6 +47,7 @@ import {injectStylesheet} from './script-manager.js';
 
 const activeHosts = new Set([
     'mokuro-reader.vercel.app',
+    'ebook-reader-ashen.vercel.app',
     'translate.google.com',
     'chatgpt.com',
     'www.dictionnaire-japonais.com',
