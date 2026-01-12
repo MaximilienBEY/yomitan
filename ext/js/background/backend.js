@@ -53,6 +53,10 @@ const activeHosts = new Set([
     'www.dictionnaire-japonais.com',
 ]);
 
+const activeUrlPatterns = [
+    'https://gemini.google.com/gem/96c86fd6d8f7',
+];
+
 /**
  * This class controls the core logic of the extension, including API calls
  * and various forms of communication between browser tabs and external applications.
@@ -226,7 +230,9 @@ export class Backend {
                     return;
                 }
                 const url = new URL(tab.url);
-                resolve(activeHosts.has(url.hostname));
+                const isActiveHost = activeHosts.has(url.hostname);
+                const matchesPattern = activeUrlPatterns.some((pattern) => tab.url?.startsWith(pattern));
+                resolve(isActiveHost || matchesPattern);
             });
         });
         /** @type {boolean} */
